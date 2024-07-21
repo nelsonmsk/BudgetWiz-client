@@ -6,7 +6,7 @@ import Signup from './views/Users/Signup';
 import Signin from './views/Auth/Signin';
 import Profile from './views/Users/Profile';
 import EditProfile from './views/Users/EditProfile';
-import {Menu} from './views/Core/Menu';
+import {MenuBar} from './views/Core/Menu';
 import Footer from './views/Core/Footer';
 import PrivateRoute from './views/Auth/PrivateRoute';
 import NewExpense from './views/Expenses/NewExpense';
@@ -28,14 +28,14 @@ import * as auth from './views/Auth/auth-helper';
 const MainRouter = () => {
 	return(
 	 <div>
-		<Menu/>
+		<MenuBar/>
 		<Routes>
 			<Route exact path="/" element={<Home />}/>
-			<Route path="/users" element={<Users />}/>
 			<Route path="/signup" element={<Signup />}/>
 			<Route path="/signin" element={<Signin />}/>
-			<Route path="/user/edit/:userId" element={<PrivateRoute path={"/user/edit/:userId"} element={<EditProfile />} /> } />
-			<Route path="/user/:userId" element={<Profile />} />
+			<Route path="/users" element={<PrivateRoute path={"/users"} element={<Users />} /> } />
+			<Route path="/users/:userId" element={<PrivateRoute path={"/users/:userId"} element={<Profile />} /> } />
+			<Route path="/users/edit/:userId" element={<PrivateRoute path={"/users/edit/:userId"} element={<EditProfile />} /> } />
 			<Route path="/expenses/new" element={<PrivateRoute path={"/expenses/new"} element={<NewExpense />} />} />
 			<Route path="/expenses/all" element={<PrivateRoute path={"/expenses/all"} element={<Expenses />} />} />
 			<Route path="/expenses/current/preview" element={<PrivateRoute path={"/expenses/current/preview"} element={<ExpenseOverview />} />} />

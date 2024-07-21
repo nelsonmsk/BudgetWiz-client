@@ -1,12 +1,13 @@
+import { signout } from './api-auth';
 
-const authenticate = (jwt,cb) => {
+export const authenticate = (jwt,cb) => {
 	if(typeof window !== "undefined"){
 		localStorage.setItem('jwt', JSON.stringify(jwt));
 		cb();
 	}
 };
 
-const isAuthenticated = () => {
+export const isAuthenticated = () => {
 	if (typeof window == "undefined"){
 		return false;
 	}
@@ -18,7 +19,7 @@ const isAuthenticated = () => {
 };
 
 
-const clearJWT = (cb,signout) =>{
+export const clearJWT = (cb) =>{
 	if(typeof window !== "undefined"){
 		localStorage.removeItem('jwt');
 		cb();

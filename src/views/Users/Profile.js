@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import {Link, redirect as Redirect} from 'react-router-dom';
+import {Link, Navigate, useParams} from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import {Avatar, IconButton,Divider, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText} from '@material-ui/core';
@@ -20,53 +17,46 @@ const useStyles = makeStyles(theme => ({
 	alignItems: 'center',
 	justifyContent: 'center',
 	padding: '0px !important',
-  }
+  },
+  title: {
+	padding:`${theme.spacing(3)}px ${theme.spacing(2.5)}px ${theme.spacing(2)}px`,
+	color: theme.palette.primary,
+  },
 }));
 
 export default function Profile({ match }) {
 	const classes = useStyles();
 	const [user, setUser] = useState({});
 	const [redirectToSignin, setRedirectToSignin] = useState(false);
-
-	const [values, setValues] = useState({
-		name: '',
-		password: '',
-		email: '',
-		open: false,
-		error: ''
-	});
-
+	const {userId} = useParams();
 	
 	useEffect(() => {
 		const abortController = new AbortController()
 		const signal = abortController.signal;
-		const jwt = auth.isAuthenticated;
+		const jwt = auth.isAuthenticated();
 		read({
-			userId: match.params.userId
+			userId: userId
 		}, {t: jwt.token}, signal).then((data) => {
 			if (data && data.error) {
+				console.log('data prof error:',data.error);
 				setRedirectToSignin(true);
 			} else {
 				setUser(data);
 			}
 		});
-		return function cleanup(){
-			abortController.abort();
-		}
-	}, [match.params.userId]);
-
+	}, [userId]);
 
 	if (redirectToSignin) {
-		return <Redirect to='/signin'/>
+		return <Navigate to={'/signin'}/>;
 	};
 	
-	const photoUrl = values.user._id
-	? `/api/users/photo/${values.user._id}?${new Date().getTime()}`
+	const photoUrl = userId
+	? `/api/users/photo/${userId}?${new Date().getTime()}`
 	: '/api/users/defaultphoto'	;
 	
 	return (
 		<Paper className={classes.root} elevation={4}>
-			<Typography variant="h6" className={classes.title}>
+			<Typography variant="h4" className={classes.title}>
 				Profile
 			</Typography>
 			<List dense>
@@ -77,9 +67,9 @@ export default function Profile({ match }) {
 						</Avatar>
 					</ListItemAvatar>
 					<ListItemText primary={user.name} secondary={user.email}/>
-				{( auth.isAuthenticated().user && auth.isAuthenticated().user._id == user._id ) ?
+				{( auth.isAuthenticated().user && auth.isAuthenticated().user._id === user._id ) ?
 					(<ListItemSecondaryAction>
-						<Link to={"/user/edit/" + user._id}>
+						<Link to={"/users/edit/" + user._id}>
 							<IconButton aria-label="Edit" color="primary">
 								<Edit/>
 							</IconButton>

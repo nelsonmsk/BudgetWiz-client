@@ -1,5 +1,5 @@
 import {React, useState,useEffect} from 'react';
-import {Link as RouterLink,Navigate} from 'react-router-dom';
+import {Link as RouterLink,Navigate, redirect} from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
@@ -7,39 +7,40 @@ import Button from '@material-ui/core/Button';
 import {Grid,Link, IconButton,FormHelperText,Checkbox, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@material-ui/core';
 import registerImg from './../../assets/images/register.jpeg';
 
+import Schema from 'validate';
 import {create} from './api-user';
 
-const schema = {
-  firstName: {
-    presence: { allowEmpty: false, message: 'is required' },
-    length: {
-      maximum: 32
-    }
-  },
-  lastName: {
-    presence: { allowEmpty: false, message: 'is required' },
-    length: {
-      maximum: 32
+const schema = new Schema({
+  name: {
+    type: String,
+    required: true,
+    length: {min: 3, max: 64},
+    message: {
+      required: 'Name is required.'
     }
   },
   email: {
-    presence: { allowEmpty: false, message: 'is required' },
-    email: true,
-    length: {
-      maximum: 64
+    type: String,
+    required: true,
+    length: {min: 3, max: 64},
+    message: {
+      required: 'Email is required.'
     }
   },
   password: {
-    presence: { allowEmpty: false, message: 'is required' },
-    length: {
-      maximum: 128
+    type: String,
+    required: true,
+    length: {min: 3, max: 128},
+    message: {
+      required: 'Password is required.'
     }
   },
   policy: {
-    presence: { allowEmpty: false, message: 'is required' },
-    checked: true
+    type: Boolean,
+    checked: true,
+    required:false,
   }
-};
+});
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -162,15 +163,28 @@ export default function Signup() {
 	});	
 
 	useEffect(() => {
-		//const errors = validate(formState.values, schema);
-		const errors = '';
+		const verrors = schema.validate(formState.values);
+    const errors = getErrors(verrors);
 		setFormState(formState => ({...formState,
-												isValid: errors ? false : true,
+												isValid: verrors.length > 0 ? false : true,
 												errors: errors || {}
 									}));
 	}, [formState.values]);	
+		
+  const getErrors = (verrors) => {
+    let errors = {};
+    if (!verrors.length === 0){
+        errors = {
+          email: verrors[0] && verrors[0].path === 'email' ? verrors[0].message : undefined,
+          password: (verrors[0] && verrors[0].path === 'password') || (verrors[1].path === 'password') ? verrors[0].message || verrors[1].message : undefined
+      };
+      return errors;
+    } else {
+      return errors = {};
+    }
+};
 
-	const handleChange = name => event => {
+	const handleChange = event => {
 		setFormState(formState => ({ ...formState, values: {
 													...formState.values,[event.target.name]: event.target.type === 'checkbox'? 
 														event.target.checked : event.target.value
@@ -179,8 +193,17 @@ export default function Signup() {
 												}
 		}));
 	};
-	const hasError = field => formState.touched[field] && formState.errors[field] ? true : false;	
-	const clickSubmit = () => {
+
+  const hasError = field => {
+    if ( formState.touched[field] && formState.errors[field]) {
+        return true;
+    } else {
+      return false;	
+    }
+  };
+
+	const clickSubmit = (event) => {
+    event.preventDefault();
 		const user = {
 			name: formState.values.name || undefined,
 			email: formState.values.email || undefined,
@@ -189,15 +212,11 @@ export default function Signup() {
 		create(user).then((data) => {
 			if (data.error) {
 				setFormState({...formState, errors:data.error});
+				console.log('Error: '+ data.error);
 			} else {
 				setFormState({...formState, errors:'', open:true});
 			}
 		})
-	};
-
-	const handleSignUp = event => {
-		event.preventDefault();
-		<Navigate to={'/'}/>
 	};	
 
 return ( 
@@ -235,7 +254,7 @@ return (
                   type="text"
                   value={formState.values.name || ''}
                   variant="outlined"
-				  required
+				          required
                 />
                 <TextField
                   className={classes.textField}
@@ -250,7 +269,7 @@ return (
                   type="email"
                   value={formState.values.email || ''}
                   variant="outlined"
-				  required
+				          required
                 />
                 <TextField
                   className={classes.textField}
@@ -265,7 +284,7 @@ return (
                   type="password"
                   value={formState.values.password || ''}
                   variant="outlined"
-				  required
+				          required
                 />
                 <div className={classes.policy}>
                   <Checkbox
@@ -335,12 +354,10 @@ return (
 		</DialogContentText>
 	</DialogContent>
 	<DialogActions>
-		<Link to="/signin">
-			<Button color="primary" autoFocus="autoFocus"
-				variant="contained">
-					Sign In
-			</Button>
-		</Link>
+    <Link type='button' color='primary' component={RouterLink}
+        to="/signin" variant="h6">
+      Sign in
+    </Link>
 	</DialogActions>
 </Dialog>
 </div>

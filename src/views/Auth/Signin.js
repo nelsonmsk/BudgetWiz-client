@@ -1,31 +1,34 @@
 import React,{useState,useEffect} from 'react';
-import {Link, Navigate,useLocation} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
-import {Grid,Button,Icon,IconButton,} from '@material-ui/core';
+import {Grid,Button,Snackbar} from '@material-ui/core';
 import loginImg from './../../assets/images/login.jpeg';
 import { Facebook as FacebookIcon, Google as GoogleIcon } from './../../icons';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import Schema from 'validate';
 
 import * as auth from  './auth-helper';
 import {signin} from  './api-auth';
 
-const schema = {
+const schema = new Schema({
   email: {
-    presence: { allowEmpty: false, message: 'is required' },
-    email: true,
-    length: {
-      maximum: 64
+    type: String,
+    required: true,
+    length: {min: 3, max: 64},
+    message: {
+      required: 'Email is required.'
     }
   },
   password: {
-    presence: { allowEmpty: false, message: 'is required' },
-    length: {
-      maximum: 128
+    type: String,
+    required: true,
+    length: {min: 3, max: 128},
+    message: {
+      required: 'Password is required.'
     }
   }
-};
+});
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -158,23 +161,39 @@ const useStyles = makeStyles(theme => ({
 
 export default function Signin(props) {
 	const classes = useStyles();
+  const navigate = useNavigate();
 	const [formState, setFormState] = useState({
 		isValid: false,
 		values: {},
 		touched: {},
 		errors: {},
+    open: false,
+    failureMessage: "",
 		redirectToReferrer: false
 	});	
 
 	useEffect(() => {
-		//const errors = validate(formState.values, schema);
-		const errors = '';
+		const verrors = schema.validate(formState.values);
+    const errors = getErrors(verrors);
 		setFormState(formState => ({...formState,
-												isValid: errors ? false : true,
+												isValid: verrors.length > 0 ? false : true,
 												errors: errors || {}
 									}));
 	}, [formState.values]);	
 		
+  const getErrors = (verrors) => {
+    let errors = {};
+    if (!verrors.length === 0){
+        errors = {
+          email: verrors[0] && verrors[0].path === 'email' ? verrors[0].message : undefined,
+          password: (verrors[0] && verrors[0].path === 'password') || (verrors[1].path === 'password') ? verrors[0].message || verrors[1].message : undefined
+      };
+      return errors;
+    } else {
+      return errors = {};
+    }
+};
+
 	const handleChange = event => {
 		setFormState(formState => ({ ...formState, values: {
 													...formState.values,[event.target.name]: event.target.type === 'checkbox'? 
@@ -184,40 +203,41 @@ export default function Signin(props) {
 												}
 		}));
 	};
-	const hasError = field => formState.touched[field] && formState.errors[field] ? true : false;	
-	
-	const clickSubmit = () => {
+
+	const hasError = field => {
+    if ( formState.touched[field] && formState.errors[field]) {
+        return true;
+    } else {
+      return false;	
+    }
+  };
+
+	const clickSubmit = (event) => {
+    event.preventDefault();
 		const user = {
 			name: formState.values.name || undefined,
 			email: formState.values.email || undefined,
 			password: formState.values.password || undefined
 		};
 		signin(user).then((data) => {
-			if (data.error) {
-				setFormState({...formState, errors:data.error});
+			if (data && data.error) {
+				setFormState({...formState, errors:data.error, open:true, failureMessage: "Login Failed, Please verify your email or password"});
 			} else {
 				auth.authenticate(data, () => {
-					setFormState({...formState, errors:'', redirectToReferrer:true});
+					setFormState({...formState, errors:'',redirectToReferrer: true });
 				});
+      navigate('/');
 			}
 		});
 	};
-	const handleSignIn = event => {
-		event.preventDefault();
-		<Navigate to={from}/>
-	};	
-	//const location = useLocation();
-	const {from} = props.location  || {
-		from: {
-			pathname: '/'
-		}
-	};
-	
-	const {redirectToReferrer} = formState.redirectToReferrer;
-	
-    if (redirectToReferrer) {
-		return (<Navigate to={from}/>)
-	};
+
+const handleSignIn =()=>{
+  return navigate('/' );
+};
+
+const hidefailureMessage=()=>{
+  setFormState({...formState, open:false, failureMessage: ''});
+};
 	
 return (
 	<div className={classes.root}>
@@ -334,6 +354,14 @@ return (
             </div>
           </div>
         </Grid>
+        {formState.failureMessage &&
+					<Snackbar anchorOrigin={{vertical: 'top',
+												horizontal: 'right',}}
+										open={formState.open}
+                    onClose={hidefailureMessage}
+										autoHideDuration={5000}
+										message={<span className={classes.snack}>{formState.failureMessage}</span>}/>
+				}
 	</div>
 				
 )	

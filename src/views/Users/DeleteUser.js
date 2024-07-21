@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {redirect as Redirect} from 'react-router-dom';
+import {Navigate} from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import {IconButton,Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@material-ui/core';
@@ -37,7 +37,7 @@ export default function DeleteUser(props) {
 	};
 	
 	if (redirect) {
-		return <Redirect to='/'/>
+		return <Navigate to={'/'}/>
 	};
 	
 	return (<span>

@@ -8,10 +8,10 @@ import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import {Icon } from '@material-ui/core';
-import registerImg from './../../assets/images/register.jpeg';
 import { DateTimePicker} from "@mui/x-date-pickers";
 
 import {create} from './api-income';
+import * as auth from  './../Auth/auth-helper';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -46,6 +46,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function NewIncome() {
 	const classes = useStyles();
+	const jwt = auth.isAuthenticated();
 	const [redirect, setRedirect] = useState(false);
 	const [values, setValues] = useState({
 		title: '',
@@ -64,30 +65,30 @@ export default function NewIncome() {
 		setValues({...values, received_on: date });
 	};
 	
+	const clickCancel = () => {
+		setRedirect(true);
+	};
+
 	const clickSubmit = () => {
 		const income = {
 			title: values.title || undefined,
 			amount: values.amount || undefined,
 			category: values.category || undefined,
 			received_on: values.received_on || undefined,
-			notes: values.notes || undefined
-			
+			notes: values.notes || undefined,
 		};
-		create(income).then((data) => {
+		create({t: jwt.token},income).then((data) => {
 			if (data.error) {
 				setValues({ ...values, error: data.error});
 			} else {
 				setValues({ ...values, error: ''});
+				clickCancel();
 			}
 		})
 	};
 	
-	const clickCancel = () => {
-		setRedirect(true);
-	};
-	
 	if (redirect) {
-		return (<Navigate to={'/incomes/'}/>);
+		return (<Navigate to={'/incomes/all'}/>);
 	};
 
 return ( 
@@ -96,7 +97,7 @@ return (
 		<Card className={classes.card}>
 			<CardContent>
 				<Typography variant="h6" className={classes.title}>
-					NewIncome
+					New Income
 				</Typography>
 				<TextField id="title" label="Title"
 					className={classes.textField}
@@ -112,14 +113,14 @@ return (
 					margin="normal"/>
 				<br/>
 				<DateTimePicker label="Incurred on"
-								views={["year", "month", "date"]}
+								views={["day", "month", "year"]}
 								value={values.received_on}
 								onChange={handleDateChange}
 								showTodayButton
 				/>
 				<br/>
 				<TextField id="multiline-flexible"label="Notes" multiline
-						rows="2" value={values.notes} onChange={handleChange('notes')}/>
+						minRows="2" value={values.notes} onChange={handleChange('notes')}/>
 				<br/>
 				{
 					values.error && (<Typography component="p" color="error">

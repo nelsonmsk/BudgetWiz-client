@@ -31,6 +31,7 @@ useEffect(() => {
 		if (data && data.error) {
 			console.log(data.error);
 		} else {
+			console.log('users', data);
 			setUsers(data)
 		}
 	})

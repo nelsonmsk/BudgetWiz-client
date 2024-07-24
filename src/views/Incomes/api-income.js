@@ -1,12 +1,13 @@
 import qs from 'qs';
 
-const create = async (income) => {
+const create = async (credentials, income) => {
 	try {
-		let response = await fetch('/api/incomes/', {
+		let response = await fetch('/api/incomes', {
 			method: 'POST',
 			headers: {
 				'Accept': 'application/json',
-				'Content-Type': 'application/json'
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' + credentials.t
 			},
 			body: JSON.stringify(income)
 		});

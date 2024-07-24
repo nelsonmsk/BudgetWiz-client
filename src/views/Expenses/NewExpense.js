@@ -8,10 +8,10 @@ import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import {Icon } from '@material-ui/core';
-import registerImg from './../../assets/images/register.jpeg';
 import { DateTimePicker} from "@mui/x-date-pickers";
 
 import {create} from './api-expense';
+import * as auth from  './../Auth/auth-helper';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -20,12 +20,7 @@ const useStyles = makeStyles(theme => ({
 	minHeight: 'calc(100vh - 123px)',
 	alignItems: 'center',
 	justifyContent: 'center',
-	padding: '0px !important',
-	backgroundColor: theme.palette.background.default,
-	backgroundImage:'url('+ registerImg + ')',
-    backgroundRepeat: 'no-repeat',
-	backgroundAttachment: 'scroll',
-	backgroundSize: 'cover',	
+	padding: '0px !important'
   }, 
   card: {
     height: '50%',
@@ -51,6 +46,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function NewExpense() {
 	const classes = useStyles();
+	const jwt = auth.isAuthenticated();
 	const [redirect, setRedirect] = useState(false);
 	const [values, setValues] = useState({
 		title: '',
@@ -68,7 +64,11 @@ export default function NewExpense() {
 	const handleDateChange = date => {
 		setValues({...values, incurred_on: date });
 	};
-	
+
+	const clickCancel = () => {
+		setRedirect(true);
+	};
+
 	const clickSubmit = () => {
 		const expense = {
 			title: values.title || undefined,
@@ -78,21 +78,18 @@ export default function NewExpense() {
 			notes: values.notes || undefined
 			
 		};
-		create(expense).then((data) => {
+		create({t: jwt.token},expense).then((data) => {
 			if (data.error) {
 				setValues({ ...values, error: data.error});
 			} else {
 				setValues({ ...values, error: ''});
+				clickCancel();
 			}
 		})
 	};
 	
-	const clickCancel = () => {
-		setRedirect(true);
-	};
-	
 	if (redirect) {
-		return (<Navigate to={'/expenses/'}/>);
+		return (<Navigate to={'/expenses/all'}/>);
 	};
 
 return ( 
@@ -101,7 +98,7 @@ return (
 		<Card className={classes.card}>
 			<CardContent>
 				<Typography variant="h6" className={classes.title}>
-					Sign Up
+					New Expense
 				</Typography>
 				<TextField id="title" label="Title"
 					className={classes.textField}
@@ -117,14 +114,14 @@ return (
 					margin="normal"/>
 				<br/>
 				<DateTimePicker label="Incurred on"
-								views={["year", "month", "date"]}
+								views={["day", "month", "year"]}
 								value={values.incurred_on}
 								onChange={handleDateChange}
 								showTodayButton
 				/>
 				<br/>
 				<TextField id="multiline-flexible"label="Notes" multiline
-						rows="2" value={values.notes} onChange={handleChange('notes')}/>
+						minRow="2" value={values.notes} onChange={handleChange('notes')}/>
 				<br/>
 				{
 					values.error && (<Typography component="p" color="error">

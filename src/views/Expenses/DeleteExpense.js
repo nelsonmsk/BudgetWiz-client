@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
 import {Navigate} from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
 import {IconButton,Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 
+import {remove} from './api-expense';
 import * as auth from  './../Auth/auth-helper';
 
 export default function DeleteExpense(props) {
@@ -18,7 +18,21 @@ export default function DeleteExpense(props) {
 	const handleRequestClose = () => {
 		setOpen(false);
 	};
-	
+
+	const removeExpense = (index) => {
+		const jwt = auth.isAuthenticated();
+				remove({
+					expenseId: props.expense._id
+				}, {t: jwt.token}).then((data) => {
+						if (data.error) {
+							console.log(data.error);
+						} else {
+							console.log('expense' + props.expense._id + 'deleted');
+							setOpen(false);
+							props.updateExpense(props.expense);
+						}
+				});
+	};
 	
 	if (redirect) {
 		return <Navigate to='/'/>
@@ -26,7 +40,7 @@ export default function DeleteExpense(props) {
 	
 	return (<span>
 		<IconButton aria-label="Delete"
-			onClick={clickButton} color="secondary">
+			onClick={clickButton} color={"secondary"}>
 			<DeleteIcon/>
 		</IconButton>
 		<Dialog open={open} onClose={handleRequestClose}>
@@ -40,8 +54,8 @@ export default function DeleteExpense(props) {
 				<Button onClick={handleRequestClose} color="primary">
 					Cancel
 				</Button>
-				<Button onClick={props.onRemove}
-					color="secondary" autoFocus="autoFocus">
+				<Button onClick={removeExpense}
+					color={"secondary"} autoFocus={"autoFocus"}>
 						Confirm
 					</Button>
 			</DialogActions>
@@ -50,6 +64,6 @@ export default function DeleteExpense(props) {
 };
 
 DeleteExpense.propTypes = {
-	expenseId: PropTypes.string.isRequired,
-	onRemove: PropTypes.func.isRequired
+	expense: PropTypes.object.isRequired,
+	updateExpense: PropTypes.func.isRequired
 };

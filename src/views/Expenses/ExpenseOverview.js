@@ -16,13 +16,21 @@ const useStyles = makeStyles(theme => ({
 	  alignItems: 'center',
 	  justifyContent: 'center',
 	},
+	cover: {
+		width: '100%',
+		border: '1px solid #cccccc',
+		borderRadius: '20px',
+		marginBottom: '15px',
+	  	overflow: 'hidden'
+	},
 	title: {
 	  padding:`${theme.spacing(3)}px ${theme.spacing(2.5)}px ${theme.spacing(2)}px`,
 	  color: theme.palette.primary,
 	  width: '100%',
 	  marginLeft: '30%',
 	  [theme.breakpoints.down('xs')]: {
-		  marginLeft: '5%',
+		marginLeft: '3%',
+		fontSize: '28px',
 	  },
 	},
 	subtitle:{
@@ -59,8 +67,8 @@ const useStyles = makeStyles(theme => ({
 	  [theme.breakpoints.down('sm')]: {
 		  padding: '32px',
 		  fontSize: '36px',
-		  height: '180px',
-		  width: '180px',
+		  height: '160px',
+		  width: '160px',
 		  marginLeft: '3%'
 	  },
 	},
@@ -87,7 +95,7 @@ const useStyles = makeStyles(theme => ({
 	  width: '100%',
 	  [theme.breakpoints.down('xs')]: {
 		  margin: '15px',
-		  width: '90%'
+		  width: '75%'
 	  },
 	},
 	statusYesterday: { 
@@ -99,7 +107,7 @@ const useStyles = makeStyles(theme => ({
 	  width: '100%',
 	  [theme.breakpoints.down('xs')]: {
 		  margin: '15px',
-		  width: '90%'
+		  width: '75%'
 	  },
 	},
 	allLink: {
@@ -228,23 +236,25 @@ export default function ExpenseOverview() {
 
 return (
 	<Paper className={classes.root} elevation={4}>
-		<Typography variant="h4" className={classes.title} color="textPrimary"> You've spent </Typography>
-		<Divider/>
-		<div className={classes.statusBox}>
-			<Typography component="span" className={classes.status}>
-				${expensePreview.month ? expensePreview.month.totalSpent : '0'}
-						<span className={classes.statusLead}> so far this month </span>
-			</Typography>
-			<div className={classes.statusText}>
-				<Typography variant="h5" className={classes.statusToday}>
-					${expensePreview.today ? expensePreview.today.totalSpent :'0'}
-						<span className={classes.day}> today </span>
+		<div className={classes.cover}>
+			<Typography variant="h4" className={classes.title} color="textPrimary"> You've spent !</Typography>
+			<Divider/>
+			<div className={classes.statusBox}>
+				<Typography component="span" className={classes.status}>
+					${expensePreview.month ? expensePreview.month.totalSpent : '0'}
+							<span className={classes.statusLead}> so far this month </span>
 				</Typography>
-				<Typography variant="h5" className={classes.statusYesterday}>
-						${expensePreview.yesterday ? expensePreview.yesterday.totalSpent: '0'}
-							<span className={classes.day}> yesterday </span>
-				</Typography>
-				<Link to="/expenses/all" className={classes.allLink}> <Typography variant="h6"> See more ... </Typography> </Link>
+				<div className={classes.statusText}>
+					<Typography variant="h5" className={classes.statusToday}>
+						${expensePreview.today ? expensePreview.today.totalSpent :'0'}
+							<span className={classes.day}> today </span>
+					</Typography>
+					<Typography variant="h5" className={classes.statusYesterday}>
+							${expensePreview.yesterday ? expensePreview.yesterday.totalSpent: '0'}
+								<span className={classes.day}> yesterday </span>
+					</Typography>
+					<Link to="/expenses/all" className={classes.allLink}> <Typography variant="h6"> See more ... </Typography> </Link>
+				</div>
 			</div>
 		</div>
 		{expenseCategories.map((expense, index) => {

@@ -1,12 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
-import {Link} from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
-import {Avatar, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText} from '@material-ui/core';
-import {ArrowForward,Person} from '@material-ui/icons';
+import {Button} from '@material-ui/core';
 import {VictoryPie, VictoryLabel, VictoryTheme} from 'victory';
+import { DatePicker} from "@mui/x-date-pickers";
 
 import * as auth from  './../Auth/auth-helper';
 import {averageCategories} from './../Expenses/api-expense';
@@ -16,15 +15,42 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(4),
 	height: '100%',
 	minHeight: 'calc(100vh - 123px)',
-	alignItems: 'center',
 	justifyContent: 'center',
-	padding: '0px !important',
+	display: 'flex'
+  },
+  chartWrapper: {
+	height:'650px !important',
+	width:'600px !important',
+	[theme.breakpoints.down('sm')]: {
+		height:'500px !important',
+		width:'500px !important',
+	},
+	[theme.breakpoints.down('xs')]: {
+        width: '100% !important',
+        height: '100% !important',
+	},
+  },
+  search: {
+	display: 'flex',
+	marginBottom: '-50px',
+	[theme.breakpoints.down('xs')]: {
+        display: 'grid',
+        marginBottom: '-10px',
+	},
+  },
+  datepicker: {
+	margin: '5px 10px !important'
+  },
+  text:{
+	margin: '5px 10px !important'
+  },
+  gobutton:{
+	backgroundColor: '#2bbd7e'
   }
 }));
 
 export default function ExpensesMonthlyScatter() {
 	const classes = useStyles();
-	const jwt = auth.isAuthenticated;
 	const [error, setError] = useState('');
 	const [expenses, setExpenses] = useState([]);
 	const date = new Date(), y = date.getFullYear(), m = date.getMonth();
@@ -34,6 +60,7 @@ export default function ExpensesMonthlyScatter() {
 	useEffect(() => {
 		const abortController = new AbortController();
 		const signal = abortController.signal;
+		const jwt = auth.isAuthenticated();
 			averageCategories({firstDay: firstDay, lastDay: lastDay},
 				{t: jwt.token}, signal).then((data) => {
 					if (data.error) {
@@ -41,15 +68,53 @@ export default function ExpensesMonthlyScatter() {
 					} else {
 						setExpenses(data);
 					}
-				})
+				});
 		return function cleanup(){
-			abortController.abort()
+			abortController.abort();
 		}
 	}, []);
 
+	const handleSearchFieldChange = value => date => {
+		if(value === 'firstDay'){
+			setFirstDay(date.$d);
+		} else {
+			setLastDay(date.$d);
+		}
+	};
+	
+	const searchClicked = () => {
+		const jwt = auth.isAuthenticated();
+		averageCategories({firstDay: firstDay, lastDay: lastDay},
+			{t: jwt.token}).then((data) => {
+				if (data.error) {
+					setError(data.error);
+				} else {
+					setExpenses(data);
+				}
+			});
+	};
+
 return (
 	<Paper className={classes.root} elevation={4}>
-		<div style={{width: 550, margin: 'auto'}}>
+		<div className={classes.chartWrapper} >
+			<div className={classes.search}>
+				<Typography className={classes.text}> Expenditure per category </Typography>
+				<DatePicker disableFuture
+						label="FROM"
+						views={["day", "month", "year"]}
+						//value={firstDay}
+						onChange={handleSearchFieldChange('firstDay')}
+						className={classes.datepicker}
+				/>
+				<DatePicker label="TO"
+							views={["day", "month", "year"]}
+							//value={lastDay}
+							onChange={handleSearchFieldChange('lastDay')}
+							className={classes.datepicker}
+				/>
+				<Button variant="contained" className={classes.gobutton}
+						onClick= {searchClicked}> GO </Button>
+			</div>
 			<svg viewBox="0 0 320 320">
 				<VictoryPie standalone={false} data={expenses.monthAVG} innerRadius={50}
 							theme={VictoryTheme.material}

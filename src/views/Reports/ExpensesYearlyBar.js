@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import {Link} from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
-import {Avatar, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText} from '@material-ui/core';
-import {ArrowForward,Person} from '@material-ui/icons';
+import {Button,} from '@material-ui/core';
 import {VictoryChart, VictoryAxis, VictoryBar, VictoryTheme} from 'victory';
+import { DatePicker} from "@mui/x-date-pickers";
 
 import {yearlyExpenses} from './../Expenses/api-expense';
 import * as auth from  './../Auth/auth-helper';
@@ -15,15 +14,40 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(4),
 	height: '100%',
 	minHeight: 'calc(100vh - 123px)',
-	alignItems: 'center',
 	justifyContent: 'center',
-	padding: '0px !important',
+	display: 'flex'
+  },
+  chartWrapper: {
+	height:'500px !important',
+	width:'650px !important',
+	[theme.breakpoints.down('sm')]: {
+		height:'400px !important',
+		width:'550px !important',
+	},
+	[theme.breakpoints.down('xs')]: {
+        width: '100% !important',
+        height: '100% !important',
+	},
+  },
+  search: {
+	display: 'flex',
+	[theme.breakpoints.down('xs')]: {
+        display: 'grid',
+	},
+  },
+  datepicker: {
+	margin: '5px 10px !important'
+  },
+  text:{
+	margin: '5px 10px !important'
+  },
+  gobutton:{
+	backgroundColor: '#2bbd7e'
   }
 }));
 
 export default function ExpensesYearlyBar() {
 	const classes = useStyles();
-	const jwt = auth.isAuthenticated;
 	const [year, setYear] = useState(new Date());
 	const [yearlyExpense, setYearlyExpense] = useState([]);
 	const [error, setError] = useState('');
@@ -31,37 +55,68 @@ export default function ExpensesYearlyBar() {
 		useEffect(() => {
 			const abortController = new AbortController();
 			const signal = abortController.signal;
+			const jwt = auth.isAuthenticated();
 				yearlyExpenses({year: year.getFullYear()},{t: jwt.token}, signal).then((data) => {
 					if (data.error) {
 						setError(data.error);
+					}else{
+						setYearlyExpense(data);
 					}
-					setYearlyExpense(data);
 				});
 			return function cleanup(){
 				abortController.abort();
 			}
 		}, []);
 		
+		const handleSearchFieldChange = value => date => {
+			if(value !== null){
+				setYear(date.$d);
+			}
+		};
+		
+		const searchClicked = () => {
+			const jwt = auth.isAuthenticated();
+			yearlyExpenses({year: year.getFullYear()},{t: jwt.token}).then((data) => {
+				if (data.error) {
+					setError(data.error);
+				}else{
+					setYearlyExpense(data);
+				}
+			});
+		};
+
 	const monthStrings = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-	
 
 return (
 	<Paper className={classes.root} elevation={4}>
-		 <VictoryChart  theme={VictoryTheme.material}
-						domainPadding={10}
-						height={300}
-						width={450}>
-			<VictoryAxis/>
-			<VictoryBar categories={{
-								x: monthStrings
-							}}
-						style={{ data: { fill: "#69f0ae", width: 20 }, labels: {fill: "#01579b"} }}
-						data={yearlyExpense.monthTot}
-						x={monthStrings['x']}
-						domain={{x: [0, 13]}}
-						labels={({datum}) => `$${datum.y}`}
-				/>
-		</VictoryChart>
+		<div className={classes.chartWrapper}>
+			<div className={classes.search}>
+				<Typography className={classes.text}> Your monthly Expenditure in </Typography>
+				<DatePicker label="Year"
+							views={["year"]}
+							//value={year}
+							onChange={handleSearchFieldChange('year')}
+							className={classes.datepicker}
+					/>
+				<Button variant="contained" className={classes.gobutton}
+						onClick= {searchClicked}> GO </Button>
+			</div>
+			<VictoryChart  theme={VictoryTheme.material}
+							domainPadding={10}
+							height={300}
+							width={450}>
+				<VictoryAxis/>
+				<VictoryBar categories={{
+									x: monthStrings
+								}}
+							style={{ data: { fill: "#2bbd7e", width: 20, }, labels: {fill: "#01579b"} }}
+							data={yearlyExpense.monthTot}
+							x={monthStrings['x']}
+							domain={{x: [0, 13]}}
+							labels={({datum}) => `$${datum.y}`}
+					/>
+			</VictoryChart>
+		</div>
 	</Paper>
 );
 

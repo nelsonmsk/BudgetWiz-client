@@ -118,9 +118,10 @@ const expenseByCategory = async (credentials, signal) => {
 		}
 };
 
-const plotExpenses = async (credentials, signal) => {
+const plotExpenses = async (params, credentials, signal) => {
+	const query = qs.stringify(params);
 	try {
-		let response = await fetch('/api/expenses/plot', {
+		let response = await fetch('/api/expenses/plot?'+query, {
 			method: 'GET',
 			signal: signal,
 			headers: {
@@ -135,9 +136,10 @@ const plotExpenses = async (credentials, signal) => {
 		}
 };
 
-const yearlyExpenses = async (credentials, signal) => {
+const yearlyExpenses = async (params, credentials, signal) => {
+	const query = qs.stringify(params);
 	try {
-		let response = await fetch('/api/expenses/yearly', {
+		let response = await fetch('/api/expenses/yearly?'+query, {
 			method: 'GET',
 			signal: signal,
 			headers: {
@@ -152,9 +154,10 @@ const yearlyExpenses = async (credentials, signal) => {
 		}
 };
 
-const averageCategories = async (credentials, signal) => {
+const averageCategories = async (params, credentials, signal) => {
+	const query = qs.stringify(params);
 	try {
-		let response = await fetch('/api/expenses/category/averages', {
+		let response = await fetch('/api/expenses/category/averages?'+query, {
 			method: 'GET',
 			signal: signal,
 			headers: {

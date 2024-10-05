@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import {Link, Navigate} from 'react-router-dom';
+import {Navigate} from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
-import {Avatar, Icon} from '@material-ui/core';
+import {Icon} from '@material-ui/core';
 import {Accordion, AccordionDetails, AccordionSummary, Divider, TextField, Button} from '@material-ui/core';
-import {ArrowForward,Person, Edit} from '@material-ui/icons';
+import {Edit} from '@material-ui/icons';
 import { DateTimePicker, DatePicker} from "@mui/x-date-pickers";
 
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
@@ -76,7 +76,6 @@ export default function Incomes() {
 		const abortController = new AbortController();
 		const signal = abortController.signal;
 		const jwt = auth.isAuthenticated();
-		console.log('firstday:',firstDay);
 		listByUser({firstDay: firstDay, lastDay: lastDay},
 			{t: jwt.token}, signal)
 			.then((data) => {

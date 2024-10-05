@@ -18,18 +18,19 @@ const useStyles = makeStyles(theme => ({
 		backgroundColor: "rgb(247 183 13) !important",
 	},
   	title: {
-		marginRight: '15% ',
+		marginRight: '10% ',
 		fontStyle: 'italic',
 		fontWeight: '700'
 	},
 	links: {
-		textDecoration: 'none !important'
+		textDecoration: 'none !important',
+		color: '#ffffff'
 	},
 	linky: {
 		textDecoration: 'white !important'
 	},
 	headWrap: {
-		marginLeft: '80px'
+		marginLeft: '20%'
 	},
 	toolbar_lg: {
 		visibility: 'visible',
@@ -73,14 +74,14 @@ export const MenuBar = withRouter(() => {
 	const IsActive = (path) =>{
 		let location = useLocation();
 		if (location.pathname === path){
-			return {color: '#ff4081', };
+			return {color: '#000000',backgroundColor: '#ffffff', margin:'0px 5px' };
 		}else{
 			if(screenWidth && screenWidth > 992){
 				return {color: '#ffffff'};
 			}else if(screenWidth && screenWidth < 992){
-				return {color: '#3f4771'};
+				return {color: '#ffffff'};
 			}else{
-				return {color: '#000000',};
+				return {color: '#ffffff',};
 			}
 		}
 	};
@@ -206,16 +207,16 @@ return(
 	<AppBar position="static" className={classes.menubar}>
 		<Toolbar className={classes.toolbar_lg}>
 			<Typography variant="h5" color="inherit" className={classes.title}>
-				BudgetWiz
+				BudgetWiz 
 			</Typography>
-			<Link to="/" >
-				<IconButton aria-label="Home" style={IsActive("/")}>
-					<HomeIcon/>
-				</IconButton>
-			</Link>
 			{
 			!auth.isAuthenticated() ?			
-			(<span>
+			(<span className={classes.headWrap}>
+				<Link to="/" >
+					<IconButton aria-label="Home" style={IsActive("/")}>
+						<HomeIcon/>
+					</IconButton>
+				</Link>
 				<Link to="/signup" className={classes.links}>
 					<Button style={IsActive("/signup")}> Sign Up </Button>
 				</Link>
@@ -225,6 +226,11 @@ return(
 			</span>)
 			:			  
 			(<span className={classes.headWrap} >
+				<Link to="/" >
+					<IconButton aria-label="Home" style={IsActive("/")}>
+						<HomeIcon/>
+					</IconButton>
+				</Link>
 				<Link to="/expenses/current/preview" className={classes.links} >
 					<Button style={IsActive( "/expenses/current/preview")}>Expenses</Button>
 				</Link>
@@ -236,7 +242,7 @@ return(
 						onClose={closeReportMenu}>
 						<ReportsMenuItems onclose={closeReportMenu} />
 					</Menu>
-					<Button color={'default'} onClick={e =>setReportsEl(e.currentTarget )}>
+					<Button className={classes.links}  onClick={e =>setReportsEl(e.currentTarget )}>
 						Reports
 					</Button>
 				</Link>

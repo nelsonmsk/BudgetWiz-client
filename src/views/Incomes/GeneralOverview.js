@@ -19,7 +19,14 @@ const useStyles = makeStyles(theme => ({
 	},
 	cover: {
 		width: '100%',
-		border: '1px solid #cccccc',
+		backgroundColor: 'antiquewhite',
+		borderRadius: '20px',
+		marginBottom: '15px',
+	  	overflow: 'hidden'
+	},
+	cover1: {
+		width: '100%',
+		backgroundColor: 'aliceblue',
 		borderRadius: '20px',
 		marginBottom: '15px',
 	  	overflow: 'hidden'
@@ -59,7 +66,6 @@ const useStyles = makeStyles(theme => ({
 
 	status: {
 		backgroundColor: 'rgb(247 183 13) !important',
-		border: '4px solid black',
 		borderRadius: '100%',
 		height: '240px',
 		width: '240px',
@@ -83,7 +89,7 @@ const useStyles = makeStyles(theme => ({
 	  fontSize: '40% !important'
 	},
 	statusText: {
-	  color: 'rgb(247 183 13) !important',
+	  color: '#ffffff !important',
 	  [theme.breakpoints.down('xs')]: {
 		  display: 'block'
 	  },
@@ -92,52 +98,52 @@ const useStyles = makeStyles(theme => ({
 	  fontStyle: 'italic'
 	},
 	statusToday: {
-	  border: '4px solid #000000',
 	  padding: '10px',
 	  borderRadius: '10px',
 	  margin: '30px',
 	  fontSize: '20px',
 	  width: '100%',
-	  color: '#e7837b',
+	  color: '#ffffff',
+	  backgroundColor: '#3f4771',
 	  [theme.breakpoints.down('xs')]: {
 		  margin: '15px',
 		  width: '70%'
 	  },
 	},
 	statusToday1: {
-		border: '4px solid #000000',
 		padding: '10px',
 		borderRadius: '10px',
 		margin: '30px',
 		fontSize: '20px',
-		color: '#2bbd7e',
+		color: '#ffffff',
 		width: '100%',
+		backgroundColor: '#3f4771',
 		[theme.breakpoints.down('xs')]: {
 			margin: '15px',
 			width: '70%'
 		},
 	  },
 	statusYesterday: { 
-	  border: '4px solid #000000',
 	  padding: '10px',
 	  borderRadius: '10px',
 	  margin: '30px',
 	  fontSize: '20px',
 	  width: '100%',
-	  color: '#e7837b',
+	  color: '#ffffff',
+	  backgroundColor: 'rgb(247 183 13)',
 	  [theme.breakpoints.down('xs')]: {
 		  margin: '15px',
 		  width: '70%'
 	  },
 	},
 	statusYesterday1: { 
-		border: '4px solid #000000',
 		padding: '10px',
 		borderRadius: '10px',
 		margin: '30px',
 		fontSize: '20px',
 		width: '100%',
-		color: '#2bbd7e',
+		color: '#ffffff',
+		backgroundColor: 'rgb(247 183 13)',
 		[theme.breakpoints.down('xs')]: {
 			margin: '15px',
 			width: '70%'
@@ -194,7 +200,7 @@ return (
 	<Paper className={classes.root} elevation={4}>
 		<div className={classes.cover}>
 			<Typography variant="h4" className={classes.title}> You've received !</Typography>
-			<Divider/>
+			<Divider style={{backgroundColor:'#e7837b'}}/>
 			<div className={classes.statusBox}>
 				<Typography component="span" className={classes.status}>
 					${incomePreview.month ? incomePreview.month.totalReceived : '0'}
@@ -213,9 +219,9 @@ return (
 				</div>
 			</div>
 		</div>
-		<div className={classes.cover}>
+		<div className={classes.cover1}>
 			<Typography variant="h4" className={classes.title1}> You've spent ! </Typography>
-			<Divider/>
+			<Divider style={{backgroundColor:'#2bbd7e'}}/>
 			<div className={classes.statusBox}>
 				<Typography component="span" className={classes.status}>
 					${expensePreview.month ? expensePreview.month.totalSpent : '0'}

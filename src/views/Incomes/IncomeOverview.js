@@ -18,7 +18,8 @@ const useStyles = makeStyles(theme => ({
   },
   cover: {
 	  width: '100%',
-	  border: '1px solid #cccccc',
+	  border: '1px solid antiquewhite',
+	  backgroundColor: 'antiquewhite',
 	  borderRadius: '20px',
 	  marginBottom: '15px',
 	  overflow: 'hidden'
@@ -35,9 +36,10 @@ const useStyles = makeStyles(theme => ({
   },
   subtitle:{
 	fontWeight: '600',
-	backgroundColor: 'lightGray',
+	border: '1px solid #e0e0e0',
 	textAlign: 'left',
 	padding: '10px 15px',
+	fontFamily: 'inherit',
 	[theme.breakpoints.down('xs')]: {
 		padding: '5px 10px',
 		fontSize: '18px'
@@ -56,7 +58,6 @@ const useStyles = makeStyles(theme => ({
   },
   status: {
 	backgroundColor: 'rgb(247 183 13) !important',
-	border: '4px solid black',
 	borderRadius: '100%',
 	height: '240px',
 	width: '240px',
@@ -78,7 +79,7 @@ const useStyles = makeStyles(theme => ({
 	fontSize: '40% !important'
   },
   statusText: {
-	color: 'rgb(247 183 13) !important',
+	color: '#fafafa !important',
 	[theme.breakpoints.down('xs')]: {
 		display: 'block'
 	},
@@ -87,24 +88,24 @@ const useStyles = makeStyles(theme => ({
 	fontStyle: 'italic'
   },
   statusToday: {
-	border: '4px solid #000000',
 	padding: '10px',
 	borderRadius: '10px',
 	margin: '30px',
 	fontSize: '20px',
 	width: '100%',
+	backgroundColor: '#3f4771',
 	[theme.breakpoints.down('xs')]: {
 		margin: '15px',
 		width: '75%'
 	},
   },
   statusYesterday: { 
-	border: '4px solid #000000',
 	padding: '10px',
 	borderRadius: '10px',
 	margin: '30px',
 	fontSize: '20px',
 	width: '100%',
+	backgroundColor: 'rgb(247 183 13)',
 	[theme.breakpoints.down('xs')]: {
 		margin: '15px',
 		width: '75%'
@@ -131,7 +132,6 @@ const useStyles = makeStyles(theme => ({
 	textAlign: 'center',
 	fontWeight: '600',
 	padding: '5px 0px',
-	overflowX: 'scroll'
   },
   headerAve: {
 	width: '33%',
@@ -238,18 +238,18 @@ return (
 	<Paper className={classes.root} elevation={4}>
 		<div className={classes.cover}>
 			<Typography variant="h4" className={classes.title} color="textPrimary"> You've received !</Typography>
-			<Divider/>
+			<Divider style={{backgroundColor:'#e7837b'}}/>
 			<div className={classes.statusBox}>
 				<Typography component="span" variant="h4" className={classes.status}>
 					${incomePreview.month ? incomePreview.month.totalReceived : '0'}
 							<span className={classes.statusLead}> so far this month </span>
 				</Typography>
 				<div className={classes.statusText}>
-					<Typography variant="h5" color="default" className={classes.statusToday}>
+					<Typography variant="h5" className={classes.statusToday}>
 						${incomePreview.today ? incomePreview.today.totalReceived :'0'}
 							<span className={classes.day}> today </span>
 					</Typography>
-					<Typography variant="h5" color="default" className={classes.statusYesterday}>
+					<Typography variant="h5"  className={classes.statusYesterday}>
 							${incomePreview.yesterday ? incomePreview.yesterday.totalReceived: '0'}
 								<span className={classes.day}> yesterday </span>
 					</Typography>

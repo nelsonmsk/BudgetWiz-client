@@ -50,7 +50,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function IncomesMonthlyScatter() {
 	const classes = useStyles();
-	const jwt = auth.isAuthenticated;
+	const jwt = auth.isAuthenticated();
 	const [error, setError] = useState('');
 	const [incomes, setIncomes] = useState([]);
 	const date = new Date(), y = date.getFullYear(), m = date.getMonth();
@@ -133,7 +133,7 @@ return (
 					<VictoryLabel textAnchor="middle"
 									style={{ fontSize: 14, fill: '#8b8b8b' }}
 									x={175} y={170}
-									text={`Spent \nper category`}
+									text={`Received \nper category`}
 						/>
 			</svg>
 		</div>

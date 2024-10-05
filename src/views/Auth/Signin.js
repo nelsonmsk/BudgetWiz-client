@@ -40,7 +40,7 @@ const useStyles = makeStyles(theme => ({
 	padding: '0px !important',
 	backgroundColor: theme.palette.background.default,
 	backgroundImage: 'url(' + loginImg + ')',
-    backgroundRepeat: 'no-repeat',
+  backgroundRepeat: 'no-repeat',
 	backgroundAttachment: 'scroll',
 	backgroundSize: 'cover',	
   }, 
